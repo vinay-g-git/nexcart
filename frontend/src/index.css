@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09090c;--bg2:#0f0f14;--bg3:#161620;--bg4:#1c1c28;
+  --border:#22222e;--border2:#2e2e3e;
+  --accent:#e8ff47;--accent2:#ff6b35;--accent3:#7b61ff;
+  --text:#eeeef5;--text2:#8888a8;--text3:#4e4e68;
+  --green:#00e599;--red:#ff4560;--yellow:#ffb800;
+  --card:#10101a;--radius:14px;
+}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
