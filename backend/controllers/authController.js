@@ -12,8 +12,11 @@ exports.register = async (req, res) => {
 
   req.session.userId = user._id.toString();
   req.session.role = user.role;
-
-  res.status(201).json({ user: user.toSafeObject() });
+  
+  req.session.save((err) => {
+    if (err) return res.status(500).json({ error: "Failed to create session" });
+    res.status(201).json({ user: user.toSafeObject() });
+  });
 };
 
 // @desc  Login
@@ -28,7 +31,10 @@ exports.login = async (req, res) => {
   req.session.userId = user._id.toString();
   req.session.role = user.role;
 
-  res.json({ user: user.toSafeObject() });
+  req.session.save((err) => {
+    if (err) return res.status(500).json({ error: "Failed to create session" });
+    res.json({ user: user.toSafeObject() });
+  });
 };
 
 // @desc  Logout
