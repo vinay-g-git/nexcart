@@ -17,13 +17,14 @@ const userRoutes    = require("./routes/users");
 
 const app = express();
 
+app.set('trust proxy', 1);
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:3000", credentials: true }));
 
-app.use("/api", rateLimit({ windowMs: 15 * 60 * 1000, max: 200 }));
+app.use("/api", rateLimit({ windowMs: 15 * 60 * 1000, max: 200, standardHeaders: true, legacyHeaders: false }));
 
 app.use(session({
   secret: process.env.SESSION_SECRET || "nexcart_secret",

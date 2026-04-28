@@ -34,9 +34,9 @@ exports.login = async (req, res) => {
 // @desc  Logout
 // @route POST /api/auth/logout
 exports.logout = (req, res) => {
+  res.clearCookie("connect.sid");
   req.session.destroy(err => {
-    if (err) return res.status(500).json({ error: "Logout failed" });
-    res.clearCookie("connect.sid");
+    if (err) console.error("Session destroy error:", err);
     res.json({ message: "Logged out successfully" });
   });
 };
