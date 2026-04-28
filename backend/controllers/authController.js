@@ -12,11 +12,8 @@ exports.register = async (req, res) => {
 
   req.session.userId = user._id.toString();
   req.session.role = user.role;
-  
-  req.session.save((err) => {
-    if (err) return res.status(500).json({ error: "Failed to create session" });
-    res.status(201).json({ user: user.toSafeObject() });
-  });
+
+  res.status(201).json({ user: user.toSafeObject() });
 };
 
 // @desc  Login
@@ -31,18 +28,19 @@ exports.login = async (req, res) => {
   req.session.userId = user._id.toString();
   req.session.role = user.role;
 
-  req.session.save((err) => {
-    if (err) return res.status(500).json({ error: "Failed to create session" });
-    res.json({ user: user.toSafeObject() });
-  });
+  res.json({ user: user.toSafeObject() });
 };
 
 // @desc  Logout
 // @route POST /api/auth/logout
 exports.logout = (req, res) => {
-  res.clearCookie("connect.sid");
   req.session.destroy(err => {
     if (err) console.error("Session destroy error:", err);
+    res.clearCookie("connect.sid", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
     res.json({ message: "Logged out successfully" });
   });
 };
