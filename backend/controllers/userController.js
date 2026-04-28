@@ -21,13 +21,22 @@ exports.updateProfile = async (req, res) => {
   const user = await User.findById(req.userId);
   if (!user) return res.status(404).json({ error: "User not found" });
 
-  user.name    = req.body.name    || user.name;
-  user.email   = req.body.email   || user.email;
+  if (req.body.name) user.name = req.body.name;
   user.address = req.body.address || user.address;
   if (req.body.password) user.password = req.body.password;
 
   const updated = await user.save();
   res.json(updated.toSafeObject());
+};
+
+// @desc  Delete own account
+// @route DELETE /api/users/profile
+exports.deleteProfile = async (req, res) => {
+  await User.findByIdAndDelete(req.userId);
+  req.session.destroy(() => {
+    res.clearCookie("connect.sid");
+    res.json({ message: "Account deleted" });
+  });
 };
 
 // @desc  Delete user (admin)

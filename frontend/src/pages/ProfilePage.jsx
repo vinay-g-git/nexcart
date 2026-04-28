@@ -9,17 +9,28 @@ export default function ProfilePage() {
   const toast = useToast();
   const navigate = useNavigate();
   const [tab, setTab] = useState("account");
-  const [form, setForm] = useState({ name: user?.name||"", email: user?.email||"" });
+  const [form, setForm] = useState({ name: user?.name||"" });
   const [saving, setSaving] = useState(false);
   const [orders, setOrders] = useState([]);
 
-  useEffect(() => { api.getMyOrders().then(r => setOrders(r.data)).catch(()=>{}); }, []);
+  useEffect(() => {
+    api.getMyOrders().then(r => setOrders(r.data)).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (user) setForm({ name: user.name || "" });
+  }, [user]);
 
   const save = async () => {
     setSaving(true);
-    try { await updateUser(form); toast("Profile updated!"); }
-    catch(e) { toast(e.response?.data?.error||e.message, true); }
-    finally { setSaving(false); }
+    try {
+      await updateUser({ name: form.name });
+      toast("Profile updated!");
+    } catch(e) {
+      toast(e.response?.data?.error||e.message, true);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const totalSpent = orders.reduce((s,o) => s+o.total, 0);
@@ -59,14 +70,27 @@ export default function ProfilePage() {
       <div style={{ background:"var(--card)", border:"1px solid var(--border)", borderRadius:14, padding:24 }}>
         {tab==="account" && <>
           <div style={{ fontWeight:800, fontSize:16, marginBottom:20 }}>Account Details</div>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:14 }}>
-            {[["name","Name","text"],["email","Email","email"]].map(([k,l,t]) => (
-              <div key={k}><label style={{ fontSize:11, fontWeight:700, color:"var(--text2)", textTransform:"uppercase", letterSpacing:0.8, fontFamily:"'DM Mono',monospace" }}>{l}</label>
-              <input type={t} style={{ display:"block", width:"100%", marginTop:7, padding:"11px 13px", background:"var(--bg3)", border:"1px solid var(--border)", borderRadius:9, color:"var(--text)", fontSize:14, outline:"none" }} value={form[k]} onChange={e=>setForm(f=>({...f,[k]:e.target.value}))} /></div>
-            ))}
+          <div style={{ display:"grid", gridTemplateColumns:"1fr", gap:14, marginBottom:14 }}>
+            <div>
+              <label style={{ fontSize:11, fontWeight:700, color:"var(--text2)", textTransform:"uppercase", letterSpacing:0.8, fontFamily:"'DM Mono',monospace" }}>Name</label>
+              <input type="text" style={{ display:"block", width:"100%", marginTop:7, padding:"11px 13px", background:"var(--bg3)", border:"1px solid var(--border)", borderRadius:9, color:"var(--text)", fontSize:14, outline:"none" }} value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} />
+            </div>
           </div>
           <button disabled={saving} onClick={save} style={{ padding:"9px 22px", background:"var(--accent)", color:"#000", fontWeight:700, border:"none", borderRadius:9, fontSize:13, cursor:"pointer" }}>
             {saving?"Saving…":"Save Changes"}
+          </button>
+          <button onClick={async () => {
+            if (!window.confirm("Delete your account? This cannot be undone.")) return;
+            try {
+              await api.deleteAccount();
+              await logout();
+              toast("Account deleted.");
+              navigate("/");
+            } catch (e) {
+              toast(e.response?.data?.error || e.message, true);
+            }
+          }} style={{ marginTop:12, padding:"9px 22px", background:"transparent", color:"var(--red)", border:"1px solid var(--red)", borderRadius:9, fontSize:13, cursor:"pointer" }}>
+            Delete Account
           </button>
         </>}
         {tab==="security" && <>

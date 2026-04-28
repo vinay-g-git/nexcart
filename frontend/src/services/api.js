@@ -38,7 +38,8 @@ export const deleteReview = (id)       => api.delete("/reviews/" + id);
 
 // ── Users ────────────────────────────────────────────────────────────────────
 export const updateProfile = (data) => api.put("/users/profile", data);
-export const getUsers      = ()     => api.get("/users");
-export const deleteUser    = (id)   => api.delete("/users/" + id);
+export const deleteAccount = ()        => api.delete("/users/profile");
+export const getUsers      = ()        => api.get("/users");
+export const deleteUser    = (id)      => api.delete("/users/" + id);
 
 export default api;
